@@ -1,43 +1,47 @@
 <?php
-    require_once 'load.php';
+require_once 'load.php';
 
-    if(isset($_GET['filter'])){
-        $args = array(
-            'tbl'=>'tbl_movies',
-            'tbl2'=>'tbl_genre',
-            'tbl3'=>'tbl_mov_genre',
-            'col'=>'movies_id',
-            'col2'=>'genre_id',
-            'col3'=>'genre_name',
-            'filter'=>$_GET['filter']
-        );
-        $getMovies = getMoviesByFilter($args);
-    }else{
+if (isset($_GET['categories'])) {
+
+    if ($_GET['categories'] == 'movie') {
         $movie_table = 'tbl_movies';
-        $getMovies = getAll($movie_table);
+        $type = $_GET['type'];
+        $getData = getMovies($movie_table, $type);
     }
-   
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Welcome to the Movie CMS!</title>
-</head>
-<body>
-    <?php include 'templates/header.php'; ?>
- 
-    <?php while($row = $getMovies->fetch(PDO::FETCH_ASSOC)):?>
-        <div class="movie-item">
-            <img src="images/<?php echo $row['movies_cover'];?>" alt="<?php echo $row['movies_title'];?>"/>
-            <h2><?php echo $row['movies_title']; ?></h2>
-            <h4><?php echo $row['movies_year']; ?></h4>
-            <a href="details.php?id=<?php echo $row["movies_id"];?>">Read More</a>
-        </div>
-    <?php endwhile;?>
-    <?php include 'templates/footer.php'; ?>
-</body>
-</html>
+    if ($_GET['categories'] == 'music') {
+        $movie_table = 'tbl_music';
+        $type = $_GET['type'];
+        $getData = getMusics($movie_table, $type);
+    }
+
+    if ($_GET['categories'] == 'tv') {
+        $movie_table = 'tbl_television';
+        $type = $_GET['type'];
+        $getData = getTVs($movie_table, $type);
+    }
+} else {
+
+    $getData = getAll('tbl_movies');
+}
+
+
+
+$jsonResponse = array('list' => array());
+$counter = 0;
+while (($row = $getData->fetch(PDO::FETCH_ASSOC))) {
+    $category = $_GET['categories'];
+    $jsonRow = array(
+        'id' => $row[$category . "_id"],
+        'cover' => $row[$category . "_poster"],
+        'title' => $row[$category . "_name"],
+        'year' => $row[$category . "_year"],
+        'type' => $row[$category . "_type"]
+    );
+    $counter++;
+    array_push($jsonResponse['list'], $jsonRow);
+};
+
+
+
+echo json_encode($jsonResponse);

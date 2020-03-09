@@ -4,11 +4,11 @@ class Database
     // Note: specify your own database credentials
     private $host = "us-cdbr-iron-east-04.cleardb.net";
 
-    private $db_name = "heroku_9935ba7602324dd";
+    private $db_name = "heroku_49e2e74c0fef76c";
 
-    private $username = "bee50ac8b3ee5b";
+    private $username = "bdc135ba90e398";
 
-    private $password = "9cc74cd5";
+    private $password = "0d9e489b";
 
     private static $instance = null;
     public $conn;
